@@ -1,0 +1,120 @@
+## Review: New Targets to Pain Management ##
+
+#Seurat v.5.0.2#
+
+library("tidyverse")
+library("Seurat")
+library("rhdf5")
+
+
+VF1_1 <- Read10X_h5("VF1-1_filtered_feature_bc_matrix.h5")
+VF1_2 <- Read10X_h5("VF1-2_filtered_feature_bc_matrix.h5")
+VF2_1 <- Read10X_h5("VF2-1_filtered_feature_bc_matrix.h5")
+VF2_2 <- Read10X_h5("VF2-2_filtered_feature_bc_matrix.h5")
+VF3_1 <- Read10X_h5("VF3-1_filtered_feature_bc_matrix.h5")
+VF3_2 <- Read10X_h5("VF3-2_filtered_feature_bc_matrix.h5")
+VF4_1 <- Read10X_h5("VF4-1_filtered_feature_bc_matrix.h5")
+VF4_2 <- Read10X_h5("VF4-2_filtered_feature_bc_matrix.h5")
+VM1_1 <- Read10X_h5("VM1-1_filtered_feature_bc_matrix.h5")
+VM1_2 <- Read10X_h5("VM1-2_filtered_feature_bc_matrix.h5")
+VM2_1 <- Read10X_h5("VM2-1_filtered_feature_bc_matrix.h5")
+VM2_2 <- Read10X_h5("VM2-2_filtered_feature_bc_matrix.h5")
+VM3_1 <- Read10X_h5("VM3-1_filtered_feature_bc_matrix.h5")
+VM3_2 <- Read10X_h5("VM3-2_filtered_feature_bc_matrix.h5")
+VM4_1 <- Read10X_h5("VM4-1_filtered_feature_bc_matrix.h5")
+VM4_2 <- Read10X_h5("VM4-2_filtered_feature_bc_matrix.h5")
+
+#Create a seurat object
+
+VF1_1_object <- CreateSeuratObject(counts = VF1_1, project="F1")
+VF1_2_object <- CreateSeuratObject(counts = VF1_2, project="F1")
+VF2_1_object <- CreateSeuratObject(counts = VF2_1, project="F2")
+VF2_2_object <- CreateSeuratObject(counts = VF2_2, project="F2")
+VF3_1_object <- CreateSeuratObject(counts = VF3_1, project="F3")
+VF3_2_object <- CreateSeuratObject(counts = VF3_2, project="F3")
+VF4_1_object <- CreateSeuratObject(counts = VF4_1, project="F4")
+VF4_2_object <- CreateSeuratObject(counts = VF4_2, project="F4")
+VM1_1_object <- CreateSeuratObject(counts = VM1_1, project="M1")
+VM1_2_object <- CreateSeuratObject(counts = VM1_2, project="M1")
+VM2_1_object <- CreateSeuratObject(counts = VM2_1, project="M2")
+VM2_2_object <- CreateSeuratObject(counts = VM2_2, project="M2")
+VM3_1_object <- CreateSeuratObject(counts = VM3_1, project="M3")
+VM3_2_object <- CreateSeuratObject(counts = VM3_2, project="M3")
+VM4_1_object <- CreateSeuratObject(counts = VM4_1, project="M4")
+VM4_2_object <- CreateSeuratObject(counts = VM4_2, project="M4")
+
+rm (VF1_1, VF1_2, VF2_1, VF2_2, VF3_1, VF3_2, VF4_1, VF4_2, VM1_1, VM1_2, VM2_1, VM2_2,
+    VM3_1, VM3_2, VM4_1, VM4_2)
+
+F1.combined <- merge(VF1_1_object, y = VF1_2_object, add.cell.ids = c("F1_1", "F2_2"), project = "F1")
+F2.combined <- merge(VF2_1_object, y = VF2_2_object, add.cell.ids = c("F2_1", "F2_2"), project = "F2")
+F3.combined <- merge(VF3_1_object, y = VF3_2_object, add.cell.ids = c("F3_1", "F3_2"), project = "F3")
+F4.combined <- merge(VF4_1_object, y = VF4_2_object, add.cell.ids = c("F4_1", "F4_2"), project = "F4")
+M1.combined <- merge(VM1_1_object, y = VM1_2_object, add.cell.ids = c("M1_1", "M1_2"), project = "M1")
+M2.combined <- merge(VM2_1_object, y = VM2_2_object, add.cell.ids = c("M2_1", "M2_2"), project = "M2")
+M3.combined <- merge(VM3_1_object, y = VM3_2_object, add.cell.ids = c("M3_1", "M3_2"), project = "M3")
+M4.combined <- merge(VM4_1_object, y = VM4_2_object, add.cell.ids = c("M4_1", "M4_2"), project = "M4")
+
+rm (VF1_1_object, VF1_2_object, VF2_1_object, VF2_2_object, VF3_1_object, VF3_2_object, 
+    VF4_1_object, VF4_2_object, VM1_1_object, VM1_2_object, VM2_1_object, VM2_2_object,
+    VM3_1_object, VM3_2_object, VM4_1_object, VM4_2_object)
+
+## Filter to remove barcodes with low counts (<2000) and SNAP25 counts above 1 ##
+
+F1.combined[["percent.mt"]] <- PercentageFeatureSet(F1.combined, pattern = "^(MT|mt)-")
+F2.combined[["percent.mt"]] <- PercentageFeatureSet(F2.combined, pattern = "^(MT|mt)-")
+F3.combined[["percent.mt"]] <- PercentageFeatureSet(F3.combined, pattern = "^(MT|mt)-")
+F4.combined[["percent.mt"]] <- PercentageFeatureSet(F4.combined, pattern = "^(MT|mt)-")
+M1.combined[["percent.mt"]] <- PercentageFeatureSet(M1.combined, pattern = "^(MT|mt)-")
+M2.combined[["percent.mt"]] <- PercentageFeatureSet(M2.combined, pattern = "^(MT|mt)-")
+M3.combined[["percent.mt"]] <- PercentageFeatureSet(M3.combined, pattern = "^(MT|mt)-")
+M4.combined[["percent.mt"]] <- PercentageFeatureSet(M4.combined, pattern = "^(MT|mt)-")
+
+F1.combined_filtered <- subset(F1.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+F2.combined_filtered <- subset(F2.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+F3.combined_filtered <- subset(F3.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+F4.combined_filtered <- subset(F4.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+M1.combined_filtered <- subset(M1.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+M2.combined_filtered <- subset(M2.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+M3.combined_filtered <- subset(M3.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+M4.combined_filtered <- subset(M4.combined, subset = SNAP25 >= 1 & nFeature_RNA > 2000  & percent.mt < 10, slot = 'counts')
+
+
+rm (F1.combined, F2.combined, F3.combined, M1.combined, M2.combined, M3.combined, 
+    M4.combined)
+
+sc_data <- list(F1.combined_filtered, F2.combined_filtered, F3.combined_filtered, 
+                F4.combined_filtered, M1.combined_filtered, M2.combined_filtered, 
+                M3.combined_filtered, M4.combined_filtered)
+
+sc_data.combined <- merge(x=sc_data[[1]], y=sc_data[-1])
+
+## Normalization ##
+
+sc_datasets <- Seurat::NormalizeData(sc_data.combined, verbose = FALSE)
+
+sc_datasets <- JoinLayers(sc_datasets)
+
+sc_datasets.list <- SplitObject(sc_datasets,split.by = "orig.ident")
+
+##  Selecting HGV ##
+
+sc_datasets.list <- lapply(X = sc_datasets.list, FUN = function(x) {
+  x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+})
+
+## Find the features that are repeatedly variable across datasets for integration (anchor features) ##
+
+features <- SelectIntegrationFeatures(object.list = sc_datasets.list)
+
+sc_datasets.anchors <- FindIntegrationAnchors(object.list = sc_datasets.list, anchor.features = features)
+
+## Data integration ## 
+
+sc_datasets.combined <- IntegrateData(anchorset = sc_datasets.anchors)
+
+sc_datasets.combined <- ScaleData(sc_datasets.combined, verbose = FALSE) %>%
+  RunPCA(npcs = 30, verbose = FALSE) %>%
+  RunUMAP(reduction = "pca", dims = 1:30) %>%
+  FindNeighbors(reduction = "pca", dims = 1:30) %>%
+  FindClusters(resolution = 0.5)
