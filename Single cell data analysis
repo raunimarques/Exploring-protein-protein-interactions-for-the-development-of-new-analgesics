@@ -1,7 +1,7 @@
-#R v.4.4.1#
-#Seurat v.5.0.2#
-#Rhdf5 v.2.48#
-#Tidvyverse v.2#
+# R v.4.4.1 #
+# Seurat v.5.0.2 #
+# Rhdf5 v.2.48 #
+# Tidyverse v.2 #
 
 
 library("tidyverse")
