@@ -85,6 +85,8 @@ M4.combined_filtered <- subset(M4.combined, subset = SNAP25 >= 1 & nFeature_RNA 
 rm (F1.combined, F2.combined, F3.combined, M1.combined, M2.combined, M3.combined, 
     M4.combined)
 
+## Combine seurat objects ##
+
 sc_data <- list(F1.combined_filtered, F2.combined_filtered, F3.combined_filtered, 
                 F4.combined_filtered, M1.combined_filtered, M2.combined_filtered, 
                 M3.combined_filtered, M4.combined_filtered)
