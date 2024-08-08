@@ -117,7 +117,7 @@ sc_datasets.anchors <- FindIntegrationAnchors(object.list = sc_datasets.list, an
 
 sc_datasets.combined <- IntegrateData(anchorset = sc_datasets.anchors)
 
-## Run UMAP ## 
+## Run Scale data, PCA and UMAP ## 
 
 sc_datasets.combined <- ScaleData(sc_datasets.combined, verbose = FALSE) %>%
   RunPCA(npcs = 30, verbose = FALSE) %>%
